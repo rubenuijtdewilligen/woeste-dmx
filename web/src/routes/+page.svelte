@@ -1,9 +1,22 @@
 <script>
   import { env as publicEnv } from '$env/dynamic/public';
+  import { onMount } from 'svelte';
 
   const numSliders = 4;
-
   let values = Array(numSliders).fill(0);
+
+  onMount(async () => {
+    try {
+      const res = await fetch(publicEnv.PUBLIC_API_URL);
+      const savedValues = await res.json();
+
+      for (let i = 0; i < numSliders; i++) {
+        values[i] = savedValues[i + 1] ?? 0;
+      }
+    } catch (err) {
+      console.error('Failed to load DMX values:', err);
+    }
+  });
 
   async function send(channel, value) {
     await fetch(publicEnv.PUBLIC_API_URL, {
