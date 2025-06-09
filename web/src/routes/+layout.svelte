@@ -25,7 +25,7 @@
     </label>
 
     <!-- Page content -->
-    <div class="px-4">
+    <div class="px-4 py-4">
       <slot></slot>
     </div>
   </div>
@@ -33,6 +33,7 @@
   <div class="drawer-side">
     <label for="my-drawer-2" aria-label="close sidebar" class="drawer-overlay"></label>
     <ul class="menu bg-base-200 text-base-content min-h-full w-max p-4">
+      <li><a href="/fixtures/techno-derby">Showtec Techno Derby</a></li>
       <li><a href="/raw">Ruwe data sliders</a></li>
     </ul>
   </div>
