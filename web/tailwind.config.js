@@ -6,5 +6,16 @@ export default {
     extend: {}
   },
 
-  plugins: [require('daisyui')]
+  plugins: [require('daisyui')],
+
+  daisyui: {
+    themes: [
+      {
+        corporate: {
+          ...require('daisyui/src/theming/themes')['[data-theme=corporate]'],
+          primary: '#0075ff'
+        }
+      }
+    ]
+  }
 };

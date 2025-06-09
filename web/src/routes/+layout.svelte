@@ -4,14 +4,14 @@
 
 <div class="navbar bg-base-100 shadow-sm">
   <div class="flex-1">
-    <a class="btn btn-ghost p-0 p-4 text-xl" href="/">
+    <a class="btn btn-ghost text-xl" href="/">
       <img src="/logo.svg" alt="Woeste Hoeve Logo" class="max-h-6" />
       Woeste Hoeve DMX Control
     </a>
   </div>
 
   <div class="hidden md:flex md:flex-none">
-    <p class="p-4">Vragen of kapot? 06 53876766</p>
+    <p class="p-4">Copyright 2025-heden © Ruben Uijtdewilligen</p>
   </div>
 </div>
 
@@ -19,12 +19,10 @@
   <input id="my-drawer-2" type="checkbox" class="drawer-toggle" />
 
   <div class="drawer-content flex flex-col">
-    <!-- Drawer button for mobile -->
     <label for="my-drawer-2" class="btn btn-primary drawer-button m-auto mb-4 w-min lg:hidden">
       Menu
     </label>
 
-    <!-- Page content -->
     <div class="px-4 py-4">
       <slot></slot>
     </div>
