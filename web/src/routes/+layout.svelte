@@ -4,6 +4,7 @@
 
   const navItems = [
     { name: 'Showtec Techno Derby', path: '/fixtures/techno-derby' },
+    { name: 'Eurolite Compact Multi FX Laser Bar', path: '/fixtures/eurolite-laser' },
     { name: 'Ruwe data sliders', path: '/raw' }
   ];
 </script>
