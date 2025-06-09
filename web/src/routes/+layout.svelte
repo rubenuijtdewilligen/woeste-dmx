@@ -1,8 +1,14 @@
 <script>
   import '../app.css';
+  import { page } from '$app/stores';
+
+  const navItems = [
+    { name: 'Showtec Techno Derby', path: '/fixtures/techno-derby' },
+    { name: 'Ruwe data sliders', path: '/raw' }
+  ];
 </script>
 
-<div class="navbar bg-base-100 shadow-sm">
+<div class="navbar bg-gray-300 shadow-sm">
   <div class="flex-1">
     <a class="btn btn-ghost text-xl" href="/">
       <img src="/logo.svg" alt="Woeste Hoeve Logo" class="max-h-6" />
@@ -30,9 +36,18 @@
 
   <div class="drawer-side">
     <label for="my-drawer-2" aria-label="close sidebar" class="drawer-overlay"></label>
-    <ul class="menu bg-base-200 text-base-content min-h-full w-max p-4">
-      <li><a href="/fixtures/techno-derby">Showtec Techno Derby</a></li>
-      <li><a href="/raw">Ruwe data sliders</a></li>
+    <ul class="menu text-base-content min-h-full w-max bg-gray-200 p-4">
+      {#each navItems as item}
+        <li>
+          <a
+            href={item.path}
+            class="hover:bg-gray-300
+            {$page.url.pathname.startsWith(item.path) ? 'bg-gray-300' : ''}"
+          >
+            {item.name}
+          </a>
+        </li>
+      {/each}
     </ul>
   </div>
 </div>
