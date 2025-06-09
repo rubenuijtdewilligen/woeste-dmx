@@ -2,7 +2,7 @@
   import { env as publicEnv } from '$env/dynamic/public';
   import { onMount } from 'svelte';
 
-  const numSliders = 4;
+  const numSliders = 512;
   let values = Array(numSliders).fill(0);
 
   onMount(async () => {
@@ -32,34 +32,38 @@
   }
 </script>
 
-<main>
-  {#each Array(numSliders) as _, index}
-    <div class="slider">
-      <label for="slider-{index}">Kanaal {index + 1}: {values[index]}</label>
-      <input
-        id="slider-{index}"
-        type="range"
-        class="range"
-        min="0"
-        max="255"
-        bind:value={values[index]}
-        on:input={(e) => updateValue(index, +e.target.value)}
-      />
-    </div>
-  {/each}
-</main>
+<div class="mt-4 overflow-x-auto">
+  <div class="flex space-x-1">
+    {#each Array(numSliders) as _, index}
+      <div class="flex w-16 flex-col items-center border-2 p-2">
+        <h2 class="text-2xl font-bold">
+          {values[index]}
+        </h2>
+
+        <input
+          type="range"
+          min="0"
+          max="255"
+          class="vertical-slider"
+          bind:value={values[index]}
+          on:input={(e) => updateValue(index, +e.target.value)}
+          id="slider-{index}"
+        />
+
+        <h2 class="text-2xl font-bold">
+          {index + 1}
+        </h2>
+      </div>
+    {/each}
+  </div>
+</div>
 
 <style>
-  main {
-    max-width: 600px;
-    margin: 2rem auto;
-    font-family: sans-serif;
-  }
-
-  .slider {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
+  .vertical-slider {
+    writing-mode: bt-lr;
+    appearance: slider-vertical;
+    -webkit-appearance: slider-vertical;
+    width: 1rem;
+    height: 10rem;
   }
 </style>
