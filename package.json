@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "express": "^5.2.1",
-    "node-d1024": "^1.0.4",
+    "node-d1024": "^1.0.5",
     "socket.io": "^4.8.3"
   }
 }
