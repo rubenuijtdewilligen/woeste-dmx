@@ -5,8 +5,20 @@ export const spotBases = {
   rearRight: { basePan: 90, baseTilt: 135, invertPan: true },
 };
 
-export const staticPositions = {
-  center: { panOffset: 0, tilt: 135 },
+export const staticPositions = {};
+
+staticPositions["center"] = {
+  frontLeft: { pan: 320, tilt: 195 },
+  frontRight: { pan: 220, tilt: 70 },
+  rearLeft: { pan: 75, tilt: 185 },
+  rearRight: { pan: 110, tilt: 95 },
+};
+
+staticPositions["logo"] = {
+  frontLeft: { pan: 351, tilt: 250 },
+  frontRight: { pan: 201, tilt: 8 },
+  rearLeft: { pan: 150, tilt: 240 },
+  rearRight: { pan: 40, tilt: 20 },
 };
 
 export function calculateSpotPanTilt(key, spotMove, spotPosition, moveStep) {
@@ -26,8 +38,15 @@ export function calculateSpotPanTilt(key, spotMove, spotPosition, moveStep) {
     }
   } else {
     const pos = staticPositions[spotPosition] || staticPositions["center"];
-    targetPan += pos.panOffset * (base.invertPan ? -1 : 1);
-    targetTilt = pos.tilt;
+
+    if (pos[key] && pos[key].pan !== undefined && pos[key].tilt !== undefined) {
+      targetPan = pos[key].pan;
+      targetTilt = pos[key].tilt;
+    } else {
+      const panOffset = pos.panOffset !== undefined ? pos.panOffset : 0;
+      targetPan = base.basePan + panOffset * (base.invertPan ? -1 : 1);
+      targetTilt = pos.tilt !== undefined ? pos.tilt : base.baseTilt;
+    }
   }
 
   return {
