@@ -2,6 +2,10 @@ import { hsvToRgb } from "./hsv.js";
 
 const colorMap = {
   red: { c1: [255, 0, 0], c2: [255, 0, 0] },
+  "blue-pink": {
+    c1: [0, 100, 255],
+    c2: [255, 0, 180],
+  },
 };
 
 const NO_GREEN_ADDRESSES = [65, 73, 89, 105, 113, 121];
@@ -42,7 +46,7 @@ export function getParColor(
     const hue = (moveStep * 0.15 + idx / totalPars) % 1;
     [r, g, b] = hsvToRgb(hue, 1, 1);
   } else {
-    const colors = colorMap[paletteName] || colorMap["red"];
+    const colors = colorMap[paletteName] || colorMap["blue-pink"];
     const colorA = isFlipped ? colors.c2 : colors.c1;
     const colorB = isFlipped ? colors.c1 : colors.c2;
     [r, g, b] = idx % 2 === 0 ? colorA : colorB;
@@ -59,11 +63,12 @@ export function getSpotColorIndices(paletteName, moveStep, isFlipped) {
     const baseIndex = (Math.floor(moveStep * 1.5) % 7) + 1;
     colorIndexA = baseIndex;
     colorIndexB = ((baseIndex + 2) % 7) + 1;
-  } else {
-    if (paletteName === "red") {
-      colorIndexA = 1;
-      colorIndexB = 1;
-    }
+  } else if (paletteName === "blue-pink") {
+    colorIndexA = 3;
+    colorIndexB = 6;
+  } else if (paletteName === "red") {
+    colorIndexA = 1;
+    colorIndexB = 1;
   }
 
   return {
