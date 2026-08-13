@@ -39,6 +39,11 @@ let beatCount = 0;
 let isFlipped = false;
 const FLIP_EVERY_BARS = 2;
 
+let calibrationMode = false;
+let calibrationSpot = "frontLeft";
+let calPan = 270;
+let calTilt = 135;
+
 // Render loop (30 fps)
 setInterval(() => {
   const now = Date.now();
@@ -53,7 +58,27 @@ setInterval(() => {
     }
   }
 
-  // Update pars
+  if (calibrationMode) {
+    pars.forEach((par) => par.setDimmer(0));
+    blinders.forEach((b) => b.off());
+
+    Object.entries(spots).forEach(([key, spot]) => {
+      if (key === calibrationSpot) {
+        spot.setDimmer(255);
+        spot.setColor(0);
+        spot.setShutter(true, 0);
+        spot.setPrism(false);
+        spot.setPan(calPan);
+        spot.setTilt(calTilt);
+      } else {
+        spot.setDimmer(0);
+      }
+    });
+
+    io.emit("dmxFrame", Array.from(dmx.universe));
+    return;
+  }
+
   const parAddresses = [57, 65, 73, 81, 89, 97, 105, 113, 121, 129, 137];
 
   pars.forEach((par, idx) => {
@@ -137,6 +162,32 @@ app.post("/api/dmx", (req, res) => {
 io.on("connection", (socket) => {
   socket.emit("state", state);
   socket.on("updateState", (data) => handleStateUpdate(data));
+
+  socket.on("startCalibration", (spotKey) => {
+    calibrationMode = true;
+    if (spotKey) calibrationSpot = spotKey;
+    io.emit("calibrationValue", {
+      spot: calibrationSpot,
+      pan: calPan,
+      tilt: calTilt,
+    });
+  });
+
+  socket.on("stopCalibration", () => {
+    calibrationMode = false;
+  });
+
+  socket.on("moveCalibration", ({ panDelta, tiltDelta }) => {
+    if (!calibrationMode) return;
+    calPan = Math.max(0, Math.min(540, calPan + panDelta));
+    calTilt = Math.max(0, Math.min(270, calTilt + tiltDelta));
+
+    io.emit("calibrationValue", {
+      spot: calibrationSpot,
+      pan: calPan,
+      tilt: calTilt,
+    });
+  });
 });
 
 const PORT = process.env.PORT || 3000;

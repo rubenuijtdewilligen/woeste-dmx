@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Spot calibrator</title>
+    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+    <style>
+      body {
+        font-family:
+          system-ui,
+          -apple-system,
+          sans-serif;
+        background: #121212;
+        color: #fff;
+        text-align: center;
+        padding-top: 40px;
+      }
+      .card {
+        border: 1px solid #333;
+        padding: 25px;
+        display: inline-block;
+        border-radius: 16px;
+        background: #1e1e1e;
+        max-width: 450px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      }
+      .val {
+        font-size: 2.2em;
+        color: #00f0ff;
+        font-family: monospace;
+        font-weight: bold;
+        margin: 20px 0;
+        background: #000;
+        padding: 15px;
+        border-radius: 8px;
+      }
+      select,
+      button {
+        padding: 12px 18px;
+        margin: 6px;
+        font-size: 15px;
+        border-radius: 8px;
+        border: none;
+        font-weight: bold;
+        cursor: pointer;
+      }
+      select {
+        background: #333;
+        color: #fff;
+        border: 1px solid #555;
+      }
+      .btn-start {
+        background: #00c853;
+        color: #000;
+      }
+      .btn-stop {
+        background: #ff1744;
+        color: #fff;
+      }
+      .instructions {
+        font-size: 0.85em;
+        color: #888;
+        text-align: left;
+        margin-top: 20px;
+        line-height: 1.5;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h2>Spot calibrator</h2>
+
+      <label for="spotSelect">Kies Spot:</label>
+      <select id="spotSelect" onchange="changeSpot()">
+        <option value="frontLeft">Links voor</option>
+        <option value="frontRight">Rechts voor</option>
+        <option value="rearLeft">Links achter</option>
+        <option value="rearRight">Rechts achter</option>
+      </select>
+
+      <br /><br />
+      <button class="btn-start" onclick="startCal()">
+        ▶️ Calibratie starten
+      </button>
+      <button class="btn-stop" onclick="stopCal()">
+        ⏹️ Stop & disco hervatten
+      </button>
+
+      <div class="val" id="readout">Pan: --- | Tilt: ---</div>
+
+      <div class="instructions">
+        <b>Besturing via toetsenbord:</b>
+        <ul>
+          <li><b>Pijltje naar links of rechts:</b> Pan aanpassen</li>
+          <li><b>Pijltje omhoog of omlaag:</b> Tilt aanpassen</li>
+          <li><b>Shift + pijltjes:</b> 1 stap ipv 5</li>
+        </ul>
+        <small>(c) 2026 Ruben Uijtdewilligen</small>
+      </div>
+    </div>
+
+    <script>
+      const socket = io("http://localhost:3000");
+
+      function startCal() {
+        const spot = document.getElementById("spotSelect").value;
+        socket.emit("startCalibration", spot);
+      }
+
+      function changeSpot() {
+        startCal();
+      }
+
+      function stopCal() {
+        socket.emit("stopCalibration");
+      }
+
+      socket.on("calibrationValue", (data) => {
+        document.getElementById("readout").innerText =
+          `Pan: ${data.pan} | Tilt: ${data.tilt}`;
+      });
+
+      window.addEventListener("keydown", (e) => {
+        let panDelta = 0;
+        let tiltDelta = 0;
+        const step = e.shiftKey ? 1 : 5;
+
+        if (e.key === "ArrowLeft") panDelta = -step;
+        if (e.key === "ArrowRight") panDelta = step;
+        if (e.key === "ArrowUp") tiltDelta = step;
+        if (e.key === "ArrowDown") tiltDelta = -step;
+
+        if (panDelta !== 0 || tiltDelta !== 0) {
+          e.preventDefault();
+          socket.emit("moveCalibration", { panDelta, tiltDelta });
+        }
+      });
+    </script>
+  </body>
+</html>
