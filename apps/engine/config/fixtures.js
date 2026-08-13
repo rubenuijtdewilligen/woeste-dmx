@@ -2,7 +2,7 @@ import D1024 from "node-d1024";
 const { SharkSpotOne, CompactPar7Tri, StageBlinder2 } = D1024.fixtures;
 
 export function initFixtures(dmx) {
-  const parAddresses = [57, 65, 81, 97, 113, 129, 137, 145, 153, 161, 169, 177];
+  const parAddresses = [57, 65, 73, 81, 89, 97, 105, 113, 121, 129, 137];
 
   const pars = parAddresses.map((addr, idx) => {
     return dmx.addFixture(`par_${idx + 1}`, new CompactPar7Tri(addr));

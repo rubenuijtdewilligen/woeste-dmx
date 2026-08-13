@@ -1,0 +1,13 @@
+{
+  "name": "woeste-dmx-pi-driver",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "pi-dmx-driver.js",
+  "scripts": {
+    "start": "node pi-dmx-driver.js"
+  },
+  "dependencies": {
+    "node-d1024": "^1.0.5",
+    "socket.io-client": "^4.8.1"
+  }
+}

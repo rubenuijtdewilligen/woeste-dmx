@@ -1,11 +1,3 @@
-/**
- * Converts HSV color values to RGB.
- *
- * @param {number} h - Hue (0.0 to 1.0)
- * @param {number} s - Saturation (0.0 to 1.0)
- * @param {number} v - Value/Brightness (0.0 to 1.0)
- * @returns {[number, number, number]} [R, G, B] from 0 to 255
- */
 export function hsvToRgb(h, s, v) {
   let r, g, b;
   const i = Math.floor(h * 6);
@@ -46,10 +38,5 @@ export function hsvToRgb(h, s, v) {
       b = q;
       break;
   }
-
   return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
-}
-
-export function rgbToHex([r, g, b]) {
-  return "#" + [r, g, b].map((x) => x.toString(16).padStart(2, "0")).join("");
 }

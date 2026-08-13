@@ -26,11 +26,9 @@ export function getSpotColorIndices(paletteName, moveStep, isFlipped) {
     colorIndexA = baseIndex;
     colorIndexB = ((baseIndex + 2) % 7) + 1;
   } else {
-    switch (paletteName) {
-      case "red":
-        colorIndexA = 1;
-        colorIndexB = 1;
-        break;
+    if (paletteName === "red") {
+      colorIndexA = 1;
+      colorIndexB = 1;
     }
   }
 

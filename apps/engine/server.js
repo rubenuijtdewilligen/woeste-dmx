@@ -14,25 +14,36 @@ const io = new Server(server, { cors: { origin: "*" } });
 
 app.use(express.json());
 
-// Initialize DMX
 const dmx = new D1024({ fps: 30 });
+
+if (!dmx.universe) {
+  dmx.universe = new Uint8Array(512);
+  const origSetChannel = dmx.setChannel?.bind(dmx);
+  dmx.setChannel = (ch, val) => {
+    if (ch >= 1 && ch <= 512) {
+      dmx.universe[ch - 1] = val;
+    }
+    if (origSetChannel) {
+      try {
+        origSetChannel(ch, val);
+      } catch (e) {}
+    }
+  };
+}
+
 const { pars, spots, blinders } = initFixtures(dmx);
 
-// Engine variables
 let moveStep = 0;
 let lastBeatTime = Date.now();
 let beatCount = 0;
 let isFlipped = false;
 const FLIP_EVERY_BARS = 2;
 
-// Render loop (30 FPS)
+// Render loop (30 fps)
 setInterval(() => {
-  if (!dmx.isConnected) return;
-
   const now = Date.now();
   const masterRatio = state.masterDimmer / 100;
 
-  // Beat tracking & flip logic
   const msPerBeat = 60000 / (state.bpm || 128);
   if (now - lastBeatTime >= msPerBeat) {
     lastBeatTime = now;
@@ -77,7 +88,6 @@ setInterval(() => {
     moveStep,
     isFlipped,
   );
-
   const spotColorAssignments = {
     frontLeft: finalSpotColorA,
     rearRight: finalSpotColorA,
@@ -97,7 +107,6 @@ setInterval(() => {
     }
 
     spot.setPrism(state.prism);
-
     const { pan, tilt } = calculateSpotPanTilt(
       key,
       state.spotMove,
@@ -107,9 +116,10 @@ setInterval(() => {
     spot.setPan(pan);
     spot.setTilt(tilt);
   });
+
+  io.emit("dmxFrame", Array.from(dmx.universe));
 }, 1000 / 30);
 
-// Server
 function handleStateUpdate(data) {
   const updatedState = updateState(data);
   io.emit("state", updatedState);
@@ -125,26 +135,7 @@ io.on("connection", (socket) => {
   socket.on("updateState", (data) => handleStateUpdate(data));
 });
 
-// Startup
-async function start() {
-  try {
-    console.log("Connecting to QuickDMX D1024...");
-    await dmx.connect();
-    console.log("D1024 connected successfully");
-
-    const PORT = process.env.PORT || 3000;
-    server.listen(PORT, () => {
-      console.log(`Server running at port ${PORT}`);
-    });
-  } catch (err) {
-    console.error("Error starting connecting to D1024:", err.message);
-  }
-}
-
-process.on("SIGINT", async () => {
-  console.log("\nShutting down...");
-  await dmx.disconnect();
-  process.exit(0);
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+  console.log(`Engine running on port ${PORT}`);
 });
-
-start();
