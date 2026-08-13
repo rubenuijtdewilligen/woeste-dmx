@@ -4,17 +4,51 @@ const colorMap = {
   red: { c1: [255, 0, 0], c2: [255, 0, 0] },
 };
 
-export function getParColor(paletteName, idx, totalPars, moveStep, isFlipped) {
-  if (paletteName === "rainbow") {
-    const hue = (moveStep * 0.15 + idx / totalPars) % 1;
-    return hsvToRgb(hue, 1, 1);
+const NO_GREEN_ADDRESSES = [65, 73, 89, 105, 113, 121];
+const NO_RED_ADDRESSES = [97];
+
+function applyHardwareCorrections(r, g, b, address) {
+  if (NO_GREEN_ADDRESSES.includes(address)) {
+    const greenCompensate = Math.round(g * 0.5);
+    r = Math.min(255, r + greenCompensate);
+    b = Math.min(255, b + greenCompensate);
+    g = 0;
   }
 
-  const colors = colorMap[paletteName] || colorMap["red"];
-  const colorA = isFlipped ? colors.c2 : colors.c1;
-  const colorB = isFlipped ? colors.c1 : colors.c2;
+  if (NO_RED_ADDRESSES.includes(address)) {
+    const redCompensate = Math.round(r * 0.5);
+    g = Math.min(255, g + redCompensate);
+    b = Math.min(255, b + redCompensate);
+    r = 0;
+  }
 
-  return idx % 2 === 0 ? colorA : colorB;
+  return [r, g, b];
+}
+
+export function getParColor(
+  paletteName,
+  idx,
+  parAddresses,
+  moveStep,
+  isFlipped,
+) {
+  const address = parAddresses[idx];
+  const totalPars = parAddresses.length;
+  let r = 0,
+    g = 0,
+    b = 0;
+
+  if (paletteName === "rainbow") {
+    const hue = (moveStep * 0.15 + idx / totalPars) % 1;
+    [r, g, b] = hsvToRgb(hue, 1, 1);
+  } else {
+    const colors = colorMap[paletteName] || colorMap["red"];
+    const colorA = isFlipped ? colors.c2 : colors.c1;
+    const colorB = isFlipped ? colors.c1 : colors.c2;
+    [r, g, b] = idx % 2 === 0 ? colorA : colorB;
+  }
+
+  return applyHardwareCorrections(r, g, b, address);
 }
 
 export function getSpotColorIndices(paletteName, moveStep, isFlipped) {

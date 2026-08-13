@@ -54,6 +54,8 @@ setInterval(() => {
   }
 
   // Update pars
+  const parAddresses = [57, 65, 73, 81, 89, 97, 105, 113, 121, 129, 137];
+
   pars.forEach((par, idx) => {
     if (state.blinder) {
       par.setDimmer(255);
@@ -61,13 +63,15 @@ setInterval(() => {
       par.setStrobe(0);
     } else {
       par.setDimmer(Math.round(255 * masterRatio));
+
       const [r, g, b] = getParColor(
         state.palette,
         idx,
-        pars.length,
+        parAddresses,
         moveStep,
         isFlipped,
       );
+
       par.setColor(r, g, b);
       par.setStrobe(state.strobe ? 15 : 0);
     }
