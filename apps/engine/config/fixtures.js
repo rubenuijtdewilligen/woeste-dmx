@@ -16,8 +16,8 @@ export function initFixtures(dmx) {
   };
 
   const blinders = [
-    dmx.addFixture("blinder_1", new StageBlinder2(511)),
-    dmx.addFixture("blinder_2", new StageBlinder2(512)),
+    dmx.addFixture("blinder_1", new StageBlinder2(510)),
+    dmx.addFixture("blinder_2", new StageBlinder2(511)),
   ];
 
   return { pars, spots, blinders };
