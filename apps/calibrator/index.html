@@ -13,7 +13,8 @@
         background: #121212;
         color: #fff;
         text-align: center;
-        padding-top: 40px;
+        padding: 30px 15px;
+        margin: 0;
       }
       .card {
         border: 1px solid #333;
@@ -21,20 +22,43 @@
         display: inline-block;
         border-radius: 16px;
         background: #1e1e1e;
-        max-width: 450px;
+        max-width: 650px;
+        width: 100%;
         box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
       }
-      .val {
-        font-size: 2.2em;
-        color: #00f0ff;
+      .grid-spots {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin: 20px 0;
+      }
+      .spot-item {
+        background: #282828;
+        border: 2px solid #444;
+        padding: 12px;
+        border-radius: 10px;
+        cursor: pointer;
+        text-align: left;
+        transition: all 0.2s ease;
+      }
+      .spot-item.active {
+        border-color: #00f0ff;
+        background: #103840;
+        box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+      }
+      .spot-title {
+        font-size: 0.85em;
+        color: #aaa;
+        font-weight: bold;
+        text-transform: uppercase;
+      }
+      .spot-val {
+        font-size: 1.3em;
         font-family: monospace;
         font-weight: bold;
-        margin: 20px 0;
-        background: #000;
-        padding: 15px;
-        border-radius: 8px;
+        color: #00f0ff;
+        margin-top: 4px;
       }
-      select,
       button {
         padding: 12px 18px;
         margin: 6px;
@@ -44,11 +68,6 @@
         font-weight: bold;
         cursor: pointer;
       }
-      select {
-        background: #333;
-        color: #fff;
-        border: 1px solid #555;
-      }
       .btn-start {
         background: #00c853;
         color: #000;
@@ -56,6 +75,29 @@
       .btn-stop {
         background: #ff1744;
         color: #fff;
+      }
+      .btn-all {
+        background: #333;
+        color: #fff;
+        border: 1px solid #555;
+      }
+      .btn-all.active {
+        background: #00f0ff;
+        color: #000;
+        border-color: #00f0ff;
+      }
+
+      .code-export {
+        background: #000;
+        border: 1px solid #333;
+        padding: 12px;
+        border-radius: 8px;
+        font-family: monospace;
+        font-size: 0.8em;
+        color: #76ff03;
+        text-align: left;
+        white-space: pre-wrap;
+        margin-top: 15px;
       }
       .instructions {
         font-size: 0.85em;
@@ -70,23 +112,93 @@
     <div class="card">
       <h2>Spot calibrator</h2>
 
-      <label for="spotSelect">Kies Spot:</label>
-      <select id="spotSelect" onchange="changeSpot()">
-        <option value="frontLeft">Links voor</option>
-        <option value="frontRight">Rechts voor</option>
-        <option value="rearLeft">Links achter</option>
-        <option value="rearRight">Rechts achter</option>
-      </select>
+      <div>
+        <button class="btn-start" onclick="startCal()">
+          ▶️ Calibratie starten
+        </button>
+        <button class="btn-stop" onclick="stopCal()">
+          ⏹️ Stop & disco hervatten
+        </button>
+      </div>
 
-      <br /><br />
-      <button class="btn-start" onclick="startCal()">
-        ▶️ Calibratie starten
-      </button>
-      <button class="btn-stop" onclick="stopCal()">
-        ⏹️ Stop & disco hervatten
+      <div
+        style="
+          margin-top: 15px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          background: #2a2a2a;
+          padding: 8px 15px;
+          border-radius: 8px;
+        "
+      >
+        <span style="font-size: 0.85em"
+          >Toon niet-geselecteerde spots ook:</span
+        >
+        <input
+          type="checkbox"
+          id="chkShowAll"
+          checked
+          onchange="toggleShowAll(this.checked)"
+          style="transform: scale(1.3); cursor: pointer"
+        />
+      </div>
+
+      <div class="grid-spots">
+        <div
+          class="spot-item"
+          id="card-frontLeft"
+          onclick="selectSpot('frontLeft')"
+        >
+          <div class="spot-title">Links voor</div>
+          <div class="spot-val" id="val-frontLeft">Pan: --- | Tilt: ---</div>
+        </div>
+
+        <div
+          class="spot-item"
+          id="card-frontRight"
+          onclick="selectSpot('frontRight')"
+        >
+          <div class="spot-title">Rechts voor</div>
+          <div class="spot-val" id="val-frontRight">Pan: --- | Tilt: ---</div>
+        </div>
+
+        <div
+          class="spot-item"
+          id="card-rearLeft"
+          onclick="selectSpot('rearLeft')"
+        >
+          <div class="spot-title">Links achter</div>
+          <div class="spot-val" id="val-rearLeft">Pan: --- | Tilt: ---</div>
+        </div>
+
+        <div
+          class="spot-item"
+          id="card-rearRight"
+          onclick="selectSpot('rearRight')"
+        >
+          <div class="spot-title">Rechts achter</div>
+          <div class="spot-val" id="val-rearRight">Pan: --- | Tilt: ---</div>
+        </div>
+      </div>
+
+      <button id="btn-select-all" class="btn-all" onclick="selectSpot('all')">
+        🌐 Alle 4 de spots tegelijk bewegen
       </button>
 
-      <div class="val" id="readout">Pan: --- | Tilt: ---</div>
+      <div
+        style="
+          text-align: left;
+          margin-top: 15px;
+          font-size: 0.8em;
+          color: #aaa;
+        "
+      >
+        Code voor movements.js:
+      </div>
+      <div class="code-export" id="codeExport">
+        // Start eerst de calibratie...
+      </div>
 
       <div class="instructions">
         <b>Besturing via toetsenbord:</b>
@@ -103,21 +215,48 @@
       const socket = io("http://localhost:3000");
 
       function startCal() {
-        const spot = document.getElementById("spotSelect").value;
-        socket.emit("startCalibration", spot);
-      }
-
-      function changeSpot() {
-        startCal();
+        socket.emit("startCalibration");
       }
 
       function stopCal() {
         socket.emit("stopCalibration");
       }
 
-      socket.on("calibrationValue", (data) => {
-        document.getElementById("readout").innerText =
-          `Pan: ${data.pan} | Tilt: ${data.tilt}`;
+      function selectSpot(spotKey) {
+        socket.emit("setCalSpot", spotKey);
+      }
+
+      function toggleShowAll(checked) {
+        socket.emit("toggleShowAllCal", checked);
+      }
+
+      socket.on("calibrationState", (data) => {
+        const { activeSpot, showAll, positions } = data;
+
+        document.getElementById("chkShowAll").checked = showAll;
+
+        ["frontLeft", "frontRight", "rearLeft", "rearRight"].forEach((key) => {
+          const card = document.getElementById(`card-${key}`);
+          if (activeSpot === key) card.classList.add("active");
+          else card.classList.remove("active");
+
+          if (positions[key]) {
+            document.getElementById(`val-${key}`).innerText =
+              `P: ${positions[key].pan} | T: ${positions[key].tilt}`;
+          }
+        });
+
+        const btnAll = document.getElementById("btn-select-all");
+        if (activeSpot === "all") btnAll.classList.add("active");
+        else btnAll.classList.remove("active");
+
+        const codeText = `staticPositions["naam_van_positie"] = {
+  frontLeft:  { pan: ${positions.frontLeft.pan}, tilt: ${positions.frontLeft.tilt} },
+  frontRight: { pan: ${positions.frontRight.pan}, tilt: ${positions.frontRight.tilt} },
+  rearLeft:   { pan: ${positions.rearLeft.pan}, tilt: ${positions.rearLeft.tilt} },
+  rearRight:  { pan: ${positions.rearRight.pan}, tilt: ${positions.rearRight.tilt} }
+};`;
+        document.getElementById("codeExport").innerText = codeText;
       });
 
       window.addEventListener("keydown", (e) => {

@@ -40,9 +40,15 @@ let isFlipped = false;
 const FLIP_EVERY_BARS = 2;
 
 let calibrationMode = false;
-let calibrationSpot = "frontLeft";
-let calPan = 270;
-let calTilt = 135;
+let activeCalSpot = "frontLeft";
+let showAllInCal = true;
+
+const calPositions = {
+  frontLeft: { pan: 270, tilt: 135 },
+  frontRight: { pan: 270, tilt: 135 },
+  rearLeft: { pan: 90, tilt: 135 },
+  rearRight: { pan: 90, tilt: 135 },
+};
 
 // Render loop (30 fps)
 setInterval(() => {
@@ -63,13 +69,16 @@ setInterval(() => {
     blinders.forEach((b) => b.off());
 
     Object.entries(spots).forEach(([key, spot]) => {
-      if (key === calibrationSpot) {
+      const pos = calPositions[key];
+      const isSelected = key === activeCalSpot || activeCalSpot === "all";
+
+      if (showAllInCal || isSelected) {
         spot.setDimmer(255);
         spot.setColor(0);
         spot.setShutter(true, 0);
         spot.setPrism(false);
-        spot.setPan(calPan);
-        spot.setTilt(calTilt);
+        spot.setPan(pos.pan);
+        spot.setTilt(pos.tilt);
       } else {
         spot.setDimmer(0);
       }
@@ -102,13 +111,11 @@ setInterval(() => {
     }
   });
 
-  // Update blinders
   blinders.forEach((b) => {
     if (state.blinder) b.on();
     else b.off();
   });
 
-  // Update spots
   const speedFactor = (state.bpm / 60) * 0.05;
   moveStep += speedFactor;
 
@@ -159,34 +166,54 @@ app.post("/api/dmx", (req, res) => {
   res.json({ status: "ok", state });
 });
 
+function emitCalState() {
+  io.emit("calibrationState", {
+    activeSpot: activeCalSpot,
+    showAll: showAllInCal,
+    positions: calPositions,
+  });
+}
+
 io.on("connection", (socket) => {
   socket.emit("state", state);
   socket.on("updateState", (data) => handleStateUpdate(data));
 
   socket.on("startCalibration", (spotKey) => {
     calibrationMode = true;
-    if (spotKey) calibrationSpot = spotKey;
-    io.emit("calibrationValue", {
-      spot: calibrationSpot,
-      pan: calPan,
-      tilt: calTilt,
-    });
+    if (spotKey) activeCalSpot = spotKey;
+    emitCalState();
   });
 
   socket.on("stopCalibration", () => {
     calibrationMode = false;
   });
 
+  socket.on("setCalSpot", (spotKey) => {
+    activeCalSpot = spotKey;
+    emitCalState();
+  });
+
+  socket.on("toggleShowAllCal", (showAll) => {
+    showAllInCal = Boolean(showAll);
+    emitCalState();
+  });
+
   socket.on("moveCalibration", ({ panDelta, tiltDelta }) => {
     if (!calibrationMode) return;
-    calPan = Math.max(0, Math.min(540, calPan + panDelta));
-    calTilt = Math.max(0, Math.min(270, calTilt + tiltDelta));
 
-    io.emit("calibrationValue", {
-      spot: calibrationSpot,
-      pan: calPan,
-      tilt: calTilt,
-    });
+    const applyDelta = (spotKey) => {
+      const pos = calPositions[spotKey];
+      pos.pan = Math.max(0, Math.min(540, pos.pan + panDelta));
+      pos.tilt = Math.max(0, Math.min(270, pos.tilt + tiltDelta));
+    };
+
+    if (activeCalSpot === "all") {
+      Object.keys(calPositions).forEach((key) => applyDelta(key));
+    } else if (calPositions[activeCalSpot]) {
+      applyDelta(activeCalSpot);
+    }
+
+    emitCalState();
   });
 });
 
