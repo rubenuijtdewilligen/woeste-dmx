@@ -21,6 +21,34 @@ staticPositions["logo"] = {
   rearRight: { pan: 40, tilt: 20 },
 };
 
+staticPositions["bar_spotlight"] = {
+  frontLeft: { pan: 193, tilt: 235 },
+  frontRight: { pan: 329, tilt: 30 },
+  rearLeft: { pan: 188, tilt: 25 },
+  rearRight: { pan: 160, tilt: 30 },
+};
+
+staticPositions["richting_bar"] = {
+  frontLeft: { pan: 183, tilt: 225 },
+  frontRight: { pan: 349, tilt: 40 },
+  rearLeft: { pan: 183, tilt: 50 },
+  rearRight: { pan: 175, tilt: 55 },
+};
+
+staticPositions["richting_deur"] = {
+  frontLeft: { pan: 218, tilt: 250 },
+  frontRight: { pan: 369, tilt: 20 },
+  rearLeft: { pan: 208, tilt: 20 },
+  rearRight: { pan: 189, tilt: 25 },
+};
+
+staticPositions["recht_naar_beneden"] = {
+  frontLeft: { pan: 390, tilt: 140 },
+  frontRight: { pan: 425, tilt: 130 },
+  rearLeft: { pan: 540, tilt: 140 },
+  rearRight: { pan: 455, tilt: 135 },
+};
+
 export function calculateSpotPanTilt(key, spotMove, spotPosition, moveStep) {
   const base = spotBases[key];
   let targetPan = base.basePan;
