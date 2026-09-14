@@ -116,8 +116,11 @@ setInterval(() => {
     else b.off();
   });
 
-  const speedFactor = (state.bpm / 60) * 0.05;
-  moveStep += speedFactor;
+  const BARS_PER_CYCLE = 4;
+  const beatsPerSecond = state.bpm / 60;
+  const radiansPerSecond =
+    (2 * Math.PI) / ((BARS_PER_CYCLE * 4) / beatsPerSecond);
+  moveStep += radiansPerSecond / 30;
 
   const { finalSpotColorA, finalSpotColorB } = getSpotColorIndices(
     state.palette,

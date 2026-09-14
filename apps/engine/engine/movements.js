@@ -55,7 +55,7 @@ export function calculateSpotPanTilt(key, spotMove, spotPosition, moveStep) {
   let targetTilt = base.baseTilt;
 
   if (spotMove !== "none") {
-    const radius = 35;
+    const radius = 200;
     const invert = base.invertPan ? -1 : 1;
 
     switch (spotMove) {
