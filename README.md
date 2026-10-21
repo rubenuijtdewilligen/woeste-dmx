@@ -12,6 +12,8 @@ Dit is een monorepo met drie onderdelen:
 
 Het dashboard dat je in de kroeg gebruikt om de kleuren of posities te veranderen, zit in de codebase van de website van de Woeste. Deze website is closed-source en blijft dat ook. Mocht je een aanpassing in de pagina voor de lichtsturing willen, neem dan contact met mij op.
 
+Een volledigere uitleg vind je in [ARCHITECTURE.md](ARCHITECTURE.md)
+
 ## Local development
 
 Je kunt de engine gewoon op je laptop draaien om effecten te testen.
