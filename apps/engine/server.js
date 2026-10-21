@@ -3,7 +3,7 @@ import http from "http";
 import { Server } from "socket.io";
 import D1024 from "node-d1024";
 
-import { initFixtures } from "./config/fixtures.js";
+import { initFixtures, PAR_ADDRESSES } from "./config/fixtures.js";
 import { state, updateState } from "./engine/state.js";
 import { getParColor, getSpotColorIndices } from "./engine/palettes.js";
 import { calculateSpotPanTilt } from "./engine/movements.js";
@@ -88,8 +88,6 @@ setInterval(() => {
     return;
   }
 
-  const parAddresses = [57, 65, 73, 81, 89, 97, 105, 113, 121, 129, 137];
-
   pars.forEach((par, idx) => {
     if (state.blinder) {
       par.setDimmer(255);
@@ -101,7 +99,7 @@ setInterval(() => {
       const [r, g, b] = getParColor(
         state.palette,
         idx,
-        parAddresses,
+        PAR_ADDRESSES,
         moveStep,
         isFlipped,
       );
