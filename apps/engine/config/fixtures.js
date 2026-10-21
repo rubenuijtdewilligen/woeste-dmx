@@ -2,8 +2,9 @@ import D1024 from "node-d1024";
 const { SharkSpotOne, CompactPar7Tri, StageBlinder2 } = D1024.fixtures;
 
 export const PAR_ADDRESSES = [57, 65, 73, 81, 89, 97, 105, 113, 121, 129, 137];
-export const NO_GREEN_ADDRESSES = [65, 73, 89, 105, 113, 121];
+export const NO_GREEN_ADDRESSES = [65, 73, 89, 105, 121];
 export const NO_RED_ADDRESSES = [97];
+export const ONLY_RED_ADDRESSES = [113];
 
 export function initFixtures(dmx) {
   const pars = PAR_ADDRESSES.map((addr, idx) => {
