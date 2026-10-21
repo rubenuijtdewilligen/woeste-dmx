@@ -1,0 +1,16 @@
+{
+  "name": "woeste-dmx",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start:engine": "npm run dev -w woeste-dmx-engine",
+    "start:driver": "npm run start -w woeste-dmx-pi-driver"
+  }
+}
