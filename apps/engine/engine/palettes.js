@@ -1,4 +1,5 @@
 import { hsvToRgb } from "./hsv.js";
+import { NO_GREEN_ADDRESSES, NO_RED_ADDRESSES } from "../config/fixtures.js";
 
 const colorMap = {
   red: { c1: [255, 0, 0], c2: [255, 0, 0] },
@@ -7,9 +8,6 @@ const colorMap = {
     c2: [255, 0, 180],
   },
 };
-
-const NO_GREEN_ADDRESSES = [65, 73, 89, 105, 113, 121];
-const NO_RED_ADDRESSES = [97];
 
 function applyHardwareCorrections(r, g, b, address) {
   if (NO_GREEN_ADDRESSES.includes(address)) {
